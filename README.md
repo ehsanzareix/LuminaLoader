@@ -21,8 +21,30 @@ Use the `image` type to show a custom image or logo as a loader. Pass an `image`
 
 ```ts
 import { createLoader } from 'lumina-loader';
-const loader = createLoader({ target: '#app', type: 'image', image: '/logo.svg', size: 80, imageAnimation: 'rotate' });
+const loader = createLoader({
+  target: '#app',
+  type: 'image',
+  image: '/logo.svg',
+  size: 80,
+  imageAnimation: 'rotate',
+});
 loader.show();
 ```
 
 Supported `imageAnimation` values: `rotate`, `pulse`, `scale`.
+
+### Determinate progress
+
+LuminaLoader supports determinate progress in `linear` or `circular` variants. Example:
+
+```ts
+const loader = createLoader({
+  target: '#app',
+  type: 'progress',
+  progressVariant: 'linear',
+  progress: 30,
+  size: 200,
+});
+loader.show();
+loader.setProgress(50);
+```

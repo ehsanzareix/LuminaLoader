@@ -7,7 +7,13 @@ describe('LuminaLoader - image', () => {
   });
 
   it('mounts and renders an image loader with rotate animation', () => {
-    const loader = createLoader({ target: document.body, type: 'image', image: 'https://example.com/logo.png', size: 64, imageAnimation: 'rotate' });
+    const loader = createLoader({
+      target: document.body,
+      type: 'image',
+      image: 'https://example.com/logo.png',
+      size: 64,
+      imageAnimation: 'rotate',
+    });
     loader.show();
     const root = document.querySelector('.lumina-root');
     expect(root).toBeTruthy();
