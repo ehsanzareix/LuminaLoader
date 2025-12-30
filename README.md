@@ -68,3 +68,23 @@ Options:
 - `overlay`: `true` | `'fullscreen'` | `'inline'` (default `true` shows fullscreen)
 - `backdrop`: `{ opacity, blur, color, clickToClose }`
 - `overlayZIndex`: number
+
+### React (adapter)
+
+A thin React wrapper is available that reuses the core engine. It mounts the loader and destroys it on unmount. Example:
+
+```tsx
+import React from 'react';
+import { LuminaLoaderReact } from 'lumina-loader/src/adapters/react/LuminaLoader';
+
+export default function App() {
+  return (
+    <LuminaLoaderReact
+      type="image"
+      image="/logo.svg"
+      imageAnimation="rotate"
+      show={true}
+    />
+  );
+}
+```
