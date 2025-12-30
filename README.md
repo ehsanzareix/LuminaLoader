@@ -15,4 +15,14 @@ Quick start
 
 See `demo/` for a minimal example.
 
-*Note: this line was added to test the commit-msg hook.*
+### Image / logo loader
+
+Use the `image` type to show a custom image or logo as a loader. Pass an `image` URL or an inline `SVGElement`. Example:
+
+```ts
+import { createLoader } from 'lumina-loader';
+const loader = createLoader({ target: '#app', type: 'image', image: '/logo.svg', size: 80, imageAnimation: 'rotate' });
+loader.show();
+```
+
+Supported `imageAnimation` values: `rotate`, `pulse`, `scale`.

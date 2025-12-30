@@ -24,3 +24,23 @@
 @keyframes lumina-spin{
   to { transform: rotate(360deg); }
 }
+
+/* Image loader styles */
+.lumina-image-wrapper{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:var(--lumina-size);
+  height:var(--lumina-size);
+}
+.lumina-image{ display:block; }
+
+/* Image animations */
+.lumina-rotate { animation: lumina-rotate var(--lumina-speed) linear infinite; }
+@keyframes lumina-rotate{ to { transform: rotate(360deg); } }
+
+.lumina-pulse { animation: lumina-pulse var(--lumina-speed) ease-in-out infinite; }
+@keyframes lumina-pulse{ 0% { transform: scale(0.95); opacity:0.7 } 50% { transform: scale(1.05); opacity:1 } 100% { transform: scale(0.95); opacity:0.7 } }
+
+.lumina-scale { animation: lumina-scale calc(var(--lumina-speed) * 2) ease-in-out infinite; }
+@keyframes lumina-scale{ 0% { transform: scale(0.9) } 50% { transform: scale(1.1) } 100% { transform: scale(0.9) } }
