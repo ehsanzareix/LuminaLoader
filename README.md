@@ -14,3 +14,5 @@ Quick start
 ```
 
 See `demo/` for a minimal example.
+
+*Note: this line was added to test the commit-msg hook.*
