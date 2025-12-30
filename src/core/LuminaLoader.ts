@@ -5,6 +5,8 @@ export interface BackdropOptions {
   clickToClose?: boolean;
 }
 
+export type ThemeOption = 'auto' | 'light' | 'dark';
+
 export interface LoaderOptions {
   target?: HTMLElement | string;
   type?: 'spinner' | 'dots' | 'bars' | 'image' | 'progress';
@@ -17,6 +19,7 @@ export interface LoaderOptions {
   ariaLabel?: string;
   image?: string | SVGElement;
   imageAnimation?: 'rotate' | 'pulse' | 'scale';
+  theme?: ThemeOption;
   // Progress options
   progress?: number; // 0-100 initial value
   progressVariant?: 'linear' | 'circular';
@@ -31,12 +34,18 @@ export class LuminaLoader {
   private backdropEl: HTMLElement | null = null;
   private prevActiveElement: Element | null = null;
   private onKeydownHandler = (e: KeyboardEvent) => this.handleKeydown(e);
+  private themeMediaQuery: MediaQueryList | null = null;
+  private themeListener: ((e: MediaQueryListEvent) => void) | null = null;
+
+  private currentTheme: ThemeOption | null = null;
 
   constructor(private opts: LoaderOptions = {}) {
     if (typeof opts.progress === 'number') {
       this.progressValue = Math.max(0, Math.min(100, opts.progress));
       this.indeterminate = false;
     }
+    // initialize theme handling
+    this.applyTheme();
   }
 
   private createImageElement(): HTMLElement {
@@ -160,15 +169,23 @@ export class LuminaLoader {
 
     overlay.appendChild(backdrop);
 
-    // set z-index
+    // set z-index (preserve any previously set inline style)
     const z = this.opts.overlayZIndex ?? 1000;
-    overlay.setAttribute('style', `z-index:${z}`);
+    const prevStyle = overlay.getAttribute('style') || '';
+    overlay.setAttribute('style', `${prevStyle};z-index:${z}`);
+
+    // apply initial theme attribute
+    const theme = this.resolveTheme();
+    if (theme) overlay.setAttribute('data-lumina-theme', theme);
 
     // insert into DOM
     (target ?? document.body).appendChild(overlay);
 
     this.overlayEl = overlay;
     this.backdropEl = backdrop;
+
+    // if auto theme, watch media changes
+    if ((this.opts.theme ?? 'auto') === 'auto') this.watchTheme();
   }
 
   private handleKeydown(e: KeyboardEvent) {
@@ -202,6 +219,83 @@ export class LuminaLoader {
     if (focusable.length) (focusable[0] as HTMLElement).focus();
     else this.overlayEl.focus();
     document.addEventListener('keydown', this.onKeydownHandler);
+
+    // ensure theme attribute stays in sync for auto
+    if ((this.opts.theme ?? 'auto') === 'auto')
+      this.applyThemeToElement(this.overlayEl);
+  }
+
+  private applyThemeToElement(el: HTMLElement | null) {
+    if (!el) return;
+    const theme = this.resolveTheme();
+    if (theme) el.setAttribute('data-lumina-theme', theme);
+    else el.removeAttribute('data-lumina-theme');
+  }
+
+  private resolveTheme(): ThemeOption | null {
+    const theme = this.opts.theme ?? 'auto';
+    if (theme === 'light' || theme === 'dark') return theme;
+    // auto: use matchMedia (guard if not a function)
+    if (
+      typeof window !== 'undefined' &&
+      typeof (window as any).matchMedia === 'function'
+    ) {
+      try {
+        const mq = (window as any).matchMedia('(prefers-color-scheme: dark)');
+        return mq.matches ? 'dark' : 'light';
+      } catch (e) {
+        return 'light';
+      }
+    }
+    return 'light';
+  }
+
+  private watchTheme() {
+    if (typeof window === 'undefined' || !('matchMedia' in window)) return;
+    try {
+      this.themeMediaQuery = (window as any).matchMedia(
+        '(prefers-color-scheme: dark)',
+      );
+      this.themeListener = (e: MediaQueryListEvent) => {
+        // update stored theme and overlay attribute
+        this.currentTheme = e.matches ? 'dark' : 'light';
+        this.applyThemeToElement(this.overlayEl);
+      };
+      if ('addEventListener' in this.themeMediaQuery) {
+        this.themeMediaQuery.addEventListener('change', this.themeListener);
+      } else if ('addListener' in this.themeMediaQuery) {
+        // older APIs
+        (this.themeMediaQuery as any).addListener(this.themeListener);
+      }
+    } catch (e) {
+      // ignore if not supported
+      this.themeMediaQuery = null;
+      this.themeListener = null;
+    }
+  }
+
+  private applyTheme() {
+    const theme = this.opts.theme ?? 'auto';
+    if (theme === 'light' || theme === 'dark') {
+      this.currentTheme = theme;
+      // no overlay yet; if mounted, apply
+      this.applyThemeToElement(this.overlayEl || this.container);
+      return;
+    }
+
+    // auto: determine current system preference and set
+    if (typeof window !== 'undefined' && 'matchMedia' in window) {
+      try {
+        const mq = (window as any).matchMedia('(prefers-color-scheme: dark)');
+        this.currentTheme = mq.matches ? 'dark' : 'light';
+      } catch (e) {
+        this.currentTheme = 'light';
+      }
+    } else {
+      this.currentTheme = 'light';
+    }
+    // if mounted, apply
+    this.applyThemeToElement(this.overlayEl || this.container);
   }
 
   private releaseFocus() {
@@ -209,6 +303,24 @@ export class LuminaLoader {
     if (this.prevActiveElement instanceof HTMLElement)
       (this.prevActiveElement as HTMLElement).focus();
     this.prevActiveElement = null;
+
+    // stop watching media
+    if (this.themeMediaQuery && this.themeListener) {
+      try {
+        if ('removeEventListener' in this.themeMediaQuery) {
+          this.themeMediaQuery.removeEventListener(
+            'change',
+            this.themeListener,
+          );
+        } else if ('removeListener' in this.themeMediaQuery) {
+          (this.themeMediaQuery as any).removeListener(this.themeListener);
+        }
+      } catch (e) {
+        // fallback
+      }
+      this.themeListener = null;
+      this.themeMediaQuery = null;
+    }
   }
 
   mount() {

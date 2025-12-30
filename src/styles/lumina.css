@@ -2,6 +2,17 @@
   --lumina-color: #4fa94d;
   --lumina-size: 48px;
   --lumina-speed: 1s;
+  --lumina-backdrop: rgba(0, 0, 0, 0.5);
+}
+
+[data-lumina-theme='dark'] {
+  --lumina-color: #86ffb8;
+  --lumina-backdrop: rgba(0, 0, 0, 0.6);
+}
+
+[data-lumina-theme='light'] {
+  --lumina-color: #4fa94d;
+  --lumina-backdrop: rgba(0, 0, 0, 0.5);
 }
 .lumina-root {
   display: flex;
