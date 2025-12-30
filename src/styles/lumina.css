@@ -1,0 +1,26 @@
+:root{
+  --lumina-color: #4fa94d;
+  --lumina-size: 48px;
+  --lumina-speed: 1s;
+}
+.lumina-root{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.lumina-loader{
+  width:var(--lumina-size);
+  height:var(--lumina-size);
+}
+.lumina-spinner{
+  border: 4px solid rgba(0,0,0,0.1);
+  border-top-color: var(--lumina-color);
+  border-radius:50%;
+  animation: lumina-spin var(--lumina-speed) linear infinite;
+  width:100%;
+  height:100%;
+}
+@keyframes lumina-spin{
+  to { transform: rotate(360deg); }
+}
