@@ -48,3 +48,23 @@ const loader = createLoader({
 loader.show();
 loader.setProgress(50);
 ```
+
+### Overlay & backdrop
+
+Show the loader as a full-screen overlay with a backdrop and focus trapping:
+
+```ts
+const loader = createLoader({
+  target: '#app',
+  type: 'spinner',
+  overlay: true,
+  backdrop: { opacity: 0.6, clickToClose: true },
+});
+loader.show();
+```
+
+Options:
+
+- `overlay`: `true` | `'fullscreen'` | `'inline'` (default `true` shows fullscreen)
+- `backdrop`: `{ opacity, blur, color, clickToClose }`
+- `overlayZIndex`: number
