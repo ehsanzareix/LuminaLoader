@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import type { DefineComponent } from 'vue';
 import LuminaLoader from './LuminaLoader.vue';
 
 const meta: Meta<typeof LuminaLoader> = {
   title: 'Adapters/Vue/LuminaLoader',
-  component: LuminaLoader as any,
+  component: LuminaLoader as unknown as DefineComponent<
+    Record<string, unknown>,
+    Record<string, unknown>
+  >,
 };
 
 export default meta;
