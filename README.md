@@ -15,4 +15,115 @@ Quick start
 
 See `demo/` for a minimal example.
 
-*Note: this line was added to test the commit-msg hook.*
+### Image / logo loader
+
+Use the `image` type to show a custom image or logo as a loader. Pass an `image` URL or an inline `SVGElement`. Example:
+
+```ts
+import { createLoader } from 'lumina-loader';
+const loader = createLoader({
+  target: '#app',
+  type: 'image',
+  image: '/logo.svg',
+  size: 80,
+  imageAnimation: 'rotate',
+});
+loader.show();
+```
+
+Supported `imageAnimation` values: `rotate`, `pulse`, `scale`.
+
+### Determinate progress
+
+LuminaLoader supports determinate progress in `linear` or `circular` variants. Example:
+
+```ts
+const loader = createLoader({
+  target: '#app',
+  type: 'progress',
+  progressVariant: 'linear',
+  progress: 30,
+  size: 200,
+});
+loader.show();
+loader.setProgress(50);
+```
+
+### Overlay & backdrop
+
+Show the loader as a full-screen overlay with a backdrop and focus trapping:
+
+```ts
+const loader = createLoader({
+  target: '#app',
+  type: 'spinner',
+  overlay: true,
+  backdrop: { opacity: 0.6, clickToClose: true },
+});
+loader.show();
+```
+
+Options:
+
+- `overlay`: `true` | `'fullscreen'` | `'inline'` (default `true` shows fullscreen)
+- `backdrop`: `{ opacity, blur, color, clickToClose }`
+- `overlayZIndex`: number
+
+### React (adapter)
+
+A thin React wrapper is available that reuses the core engine. It mounts the loader and destroys it on unmount. Example:
+
+````tsx
+import React from 'react';
+import { LuminaLoaderReact } from 'lumina-loader/src/adapters/react/LuminaLoader';
+
+export default function App() {
+  return (
+    <LuminaLoaderReact
+      type="image"
+      image="/logo.svg"
+      imageAnimation="rotate"
+      show={true}
+    />
+  );
+}
+
+### Vue (adapter)
+
+A thin Vue 3 wrapper is also available and reuses the core engine. Example:
+
+```vue
+<template>
+  <LuminaLoader :type="'image'" image="/logo.svg" :show="true" />
+</template>
+
+<script setup lang="ts">
+import LuminaLoader from 'lumina-loader/src/adapters/vue/LuminaLoader.vue';
+</script>
+````
+
+---
+
+## Docs & Storybook 📚
+
+Interactive component demos are provided via Storybook for React and Vue adapters.
+
+- Start Storybook locally (React):
+
+```bash
+npm run storybook
+```
+
+- Start Storybook locally (Vue):
+
+```bash
+npm run storybook:vue
+```
+
+CI builds both Storybooks on PRs and pushes to `main`, uploads build artifacts for inspection, and automatically deploys a combined static Storybook site to GitHub Pages for the `main` branch.
+
+> Note: Deployment uses the repository's `GITHUB_TOKEN` and publishes the contents of both Storybooks under the `gh-pages` branch.
+
+```
+
+```
