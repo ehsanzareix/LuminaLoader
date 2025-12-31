@@ -73,7 +73,7 @@ Options:
 
 A thin React wrapper is available that reuses the core engine. It mounts the loader and destroys it on unmount. Example:
 
-```tsx
+````tsx
 import React from 'react';
 import { LuminaLoaderReact } from 'lumina-loader/src/adapters/react/LuminaLoader';
 
@@ -87,4 +87,21 @@ export default function App() {
     />
   );
 }
+
+### Vue (adapter)
+
+A thin Vue 3 wrapper is also available and reuses the core engine. Example:
+
+```vue
+<template>
+  <LuminaLoader :type="'image'" image="/logo.svg" :show="true" />
+</template>
+
+<script setup lang="ts">
+import LuminaLoader from 'lumina-loader/src/adapters/vue/LuminaLoader.vue';
+</script>
+````
+
+```
+
 ```
