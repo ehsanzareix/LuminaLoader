@@ -28,7 +28,7 @@ export interface LoaderOptions {
 export class LuminaLoader {
   private container: HTMLElement | null = null;
   private progressValue: number | null = null;
-  private indeterminate: boolean = false;
+  private indeterminate = false;
   private progressEl: HTMLElement | null = null;
   private overlayEl: HTMLElement | null = null;
   private backdropEl: HTMLElement | null = null;
@@ -238,10 +238,10 @@ export class LuminaLoader {
     // auto: use matchMedia (guard if not a function)
     if (
       typeof window !== 'undefined' &&
-      typeof (window as any).matchMedia === 'function'
+      typeof window.matchMedia === 'function'
     ) {
       try {
-        const mq = (window as any).matchMedia('(prefers-color-scheme: dark)');
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
         return mq.matches ? 'dark' : 'light';
       } catch (e) {
         return 'light';
@@ -253,19 +253,25 @@ export class LuminaLoader {
   private watchTheme() {
     if (typeof window === 'undefined' || !('matchMedia' in window)) return;
     try {
-      this.themeMediaQuery = (window as any).matchMedia(
-        '(prefers-color-scheme: dark)',
-      );
+      this.themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       this.themeListener = (e: MediaQueryListEvent) => {
         // update stored theme and overlay attribute
         this.currentTheme = e.matches ? 'dark' : 'light';
         this.applyThemeToElement(this.overlayEl);
       };
-      if ('addEventListener' in this.themeMediaQuery) {
-        this.themeMediaQuery.addEventListener('change', this.themeListener);
-      } else if ('addListener' in this.themeMediaQuery) {
-        // older APIs
-        (this.themeMediaQuery as any).addListener(this.themeListener);
+      const mq = this.themeMediaQuery;
+      if (mq) {
+        if ('addEventListener' in mq) {
+          mq.addEventListener(
+            'change',
+            this.themeListener as unknown as EventListener,
+          );
+        } else if ('addListener' in mq) {
+          // older APIs
+          (
+            mq as unknown as { addListener: (f: EventListener) => void }
+          ).addListener(this.themeListener as unknown as EventListener);
+        }
       }
     } catch (e) {
       // ignore if not supported
@@ -286,7 +292,7 @@ export class LuminaLoader {
     // auto: determine current system preference and set
     if (typeof window !== 'undefined' && 'matchMedia' in window) {
       try {
-        const mq = (window as any).matchMedia('(prefers-color-scheme: dark)');
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
         this.currentTheme = mq.matches ? 'dark' : 'light';
       } catch (e) {
         this.currentTheme = 'light';
@@ -313,7 +319,11 @@ export class LuminaLoader {
             this.themeListener,
           );
         } else if ('removeListener' in this.themeMediaQuery) {
-          (this.themeMediaQuery as any).removeListener(this.themeListener);
+          (
+            this.themeMediaQuery as unknown as {
+              removeListener: (f: EventListener) => void;
+            }
+          ).removeListener(this.themeListener as unknown as EventListener);
         }
       } catch (e) {
         // fallback

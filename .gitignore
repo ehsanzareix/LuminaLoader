@@ -3,3 +3,7 @@ dist/
 .vscode/
 .env
 coverage/
+
+# Storybook static build outputs
+storybook-static/
+storybook-vue-static/

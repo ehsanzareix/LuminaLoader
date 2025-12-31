@@ -102,6 +102,28 @@ import LuminaLoader from 'lumina-loader/src/adapters/vue/LuminaLoader.vue';
 </script>
 ````
 
+---
+
+## Docs & Storybook 📚
+
+Interactive component demos are provided via Storybook for React and Vue adapters.
+
+- Start Storybook locally (React):
+
+```bash
+npm run storybook
+```
+
+- Start Storybook locally (Vue):
+
+```bash
+npm run storybook:vue
+```
+
+CI builds both Storybooks on PRs and pushes to `main`, uploads build artifacts for inspection, and automatically deploys a combined static Storybook site to GitHub Pages for the `main` branch.
+
+> Note: Deployment uses the repository's `GITHUB_TOKEN` and publishes the contents of both Storybooks under the `gh-pages` branch.
+
 ```
 
 ```

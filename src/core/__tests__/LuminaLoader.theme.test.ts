@@ -23,10 +23,10 @@ describe('LuminaLoader - theme', () => {
 
   it('resolves auto theme using matchMedia', () => {
     // mock matchMedia to simulate dark mode
-    vi.stubGlobal('matchMedia', (query: string) => ({
+    vi.stubGlobal('matchMedia', () => ({
       matches: true,
-      addEventListener: () => {},
-      removeEventListener: () => {},
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     }));
     const loader = createLoader({
       target: document.body,
