@@ -1,6 +1,9 @@
 {
-  "name": "lumina-loader",
+  "name": "@ehsanzarei/lumina-loader",
   "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Lightweight, framework-agnostic loader with custom logo support",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
