@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write # required by deploy-pages
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
