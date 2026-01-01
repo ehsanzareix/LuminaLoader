@@ -33,5 +33,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Configure npm auth
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${NPM_TOKEN}"
+
       - name: Run release
         run: npx semantic-release
