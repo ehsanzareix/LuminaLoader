@@ -6,6 +6,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    exclude: ['tests/visual/**'],
+    exclude: ['tests/visual/**', 'node_modules/**'],
   },
 });
