@@ -41,7 +41,7 @@ jobs:
           cp -r storybook-vue-static/* site/vue/
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./site
 
