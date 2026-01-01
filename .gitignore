@@ -7,3 +7,7 @@ coverage/
 # Storybook static build outputs
 storybook-static/
 storybook-vue-static/
+
+# Test artifacts
+test-results/
+.playwright/
