@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/ehsanzareix/LuminaLoader/compare/v1.0.0...v1.1.0) (2026-01-02)
+
+
+### Bug Fixes
+
+* **lint:** resolve appendChild type guards, remove unused React import, and fix Vue SFC template ([1084d07](https://github.com/ehsanzareix/LuminaLoader/commit/1084d07570c7d2067fd6032b1846c077082b6415))
+* **vue:** import ref and make inline mount robust for host connectivity ([5c33189](https://github.com/ehsanzareix/LuminaLoader/commit/5c33189a5ce63306b997bc15b565d9e7eee45e7c))
+
+
+### Features
+
+* **design:** add design tokens, spinner polish, overlay mount guard, story fixes and visual test ([2ad13e4](https://github.com/ehsanzareix/LuminaLoader/commit/2ad13e4a1c5dbf0f19190cf820463711e43a7de2))
+
 # 1.0.0 (2026-01-01)
 
 
