@@ -1,6 +1,6 @@
 <template>
   <!-- Render a host element so the loader can mount inline inside Storybook / apps -->
-  <div ref="host" />
+  <div ref="host"></div>
 </template>
 
 <script setup lang="ts">

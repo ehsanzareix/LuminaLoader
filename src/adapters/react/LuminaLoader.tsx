@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import { createLoader } from '../../api';
 import type { LoaderOptions } from '../../core/LuminaLoader';
@@ -13,7 +13,7 @@ export const LuminaLoaderReact: FC<LuminaReactProps> = ({
   container,
   ...opts
 }) => {
-  const hostRef = React.useRef<HTMLElement | null>(null);
+  const hostRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const targetEl = container
@@ -30,7 +30,7 @@ export const LuminaLoaderReact: FC<LuminaReactProps> = ({
     return () => loader.destroy();
   }, [show, container, JSON.stringify(opts)]);
 
-  return <span ref={hostRef as any} />;
+  return <span ref={hostRef} />;
 };
 
 export default LuminaLoaderReact;

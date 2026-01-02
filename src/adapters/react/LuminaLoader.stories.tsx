@@ -1,10 +1,9 @@
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { LuminaLoaderReact } from './LuminaLoader';
 
 const meta: Meta<typeof LuminaLoaderReact> = {
   title: 'Adapters/React/LuminaLoader',
-  component: LuminaLoaderReact as any,
+  component: LuminaLoaderReact,
 };
 
 export default meta;

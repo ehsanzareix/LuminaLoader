@@ -183,17 +183,12 @@ export class LuminaLoader {
       if (typeof document !== 'undefined' && document.body)
         mountRoot = document.body;
     } catch (e) {
-      mountRoot = null;
+      void e;
     }
 
     if (!mountRoot && target instanceof HTMLElement) mountRoot = target;
 
-    if (
-      !mountRoot &&
-      target &&
-      typeof (target as any).appendChild === 'function'
-    ) {
-      // @ts-ignore - dynamic check
+    if (!mountRoot && this.hasAppendChild(target)) {
       mountRoot = target as unknown as HTMLElement;
     }
 
@@ -306,6 +301,15 @@ export class LuminaLoader {
     }
   }
 
+  private hasAppendChild(v: unknown): v is { appendChild: (n: Node) => void } {
+    return (
+      typeof v === 'object' &&
+      v !== null &&
+      'appendChild' in v &&
+      typeof (v as { appendChild?: unknown }).appendChild === 'function'
+    );
+  }
+
   private applyTheme() {
     const theme = this.opts.theme ?? 'auto';
     if (theme === 'light' || theme === 'dark') {
@@ -388,7 +392,7 @@ export class LuminaLoader {
       } else {
         const loader = document.createElement('div');
         loader.className = `lumina-loader lumina-${this.opts.type || 'spinner'}`;
-        loader.innerHTML = `<div class=\"lumina-spinner-inner\"></div>`;
+        loader.innerHTML = `<div class="lumina-spinner-inner"></div>`;
         contentHost.appendChild(loader);
       }
       if (this.overlayEl) this.overlayEl.appendChild(contentHost);
@@ -420,16 +424,15 @@ export class LuminaLoader {
         } else if (this.opts.target instanceof HTMLElement) {
           resolvedTarget = this.opts.target;
         }
-      } catch (e) {}
+      } catch (e) {
+        void e;
+      }
 
       if (!resolvedTarget && typeof document !== 'undefined' && document.body) {
         resolvedTarget = document.body;
       }
 
-      if (
-        resolvedTarget &&
-        typeof (resolvedTarget as any).appendChild === 'function'
-      ) {
+      if (resolvedTarget && this.hasAppendChild(resolvedTarget)) {
         resolvedTarget.appendChild(el);
       } else if (typeof document !== 'undefined' && document.body) {
         document.body.appendChild(el);
