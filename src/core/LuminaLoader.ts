@@ -1,7 +1,7 @@
 export interface BackdropOptions {
-  opacity?: number; // 0-1
-  blur?: string; // e.g., '4px'
-  color?: string; // CSS color
+  opacity?: number;
+  blur?: string;
+  color?: string;
   clickToClose?: boolean;
 }
 
@@ -9,7 +9,16 @@ export type ThemeOption = 'auto' | 'light' | 'dark';
 
 export interface LoaderOptions {
   target?: HTMLElement | string;
-  type?: 'spinner' | 'dots' | 'bars' | 'image' | 'progress';
+  type?:
+    | 'spinner'
+    | 'dots'
+    | 'bars'
+    | 'pulse'
+    | 'gradient-ring'
+    | 'orbit'
+    | 'wave'
+    | 'image'
+    | 'progress';
   size?: number;
   color?: string;
   speed?: number;
@@ -18,11 +27,11 @@ export interface LoaderOptions {
   backdrop?: BackdropOptions;
   ariaLabel?: string;
   image?: string | SVGElement;
-  imageAnimation?: 'rotate' | 'pulse' | 'scale';
+  imageAnimation?: 'rotate' | 'pulse' | 'scale' | 'bounce';
   theme?: ThemeOption;
-  // Progress options
-  progress?: number; // 0-100 initial value
+  progress?: number;
   progressVariant?: 'linear' | 'circular';
+  text?: string; // Loading text
 }
 
 export class LuminaLoader {
@@ -36,7 +45,6 @@ export class LuminaLoader {
   private onKeydownHandler = (e: KeyboardEvent) => this.handleKeydown(e);
   private themeMediaQuery: MediaQueryList | null = null;
   private themeListener: ((e: MediaQueryListEvent) => void) | null = null;
-
   private currentTheme: ThemeOption | null = null;
 
   constructor(private opts: LoaderOptions = {}) {
@@ -44,8 +52,76 @@ export class LuminaLoader {
       this.progressValue = Math.max(0, Math.min(100, opts.progress));
       this.indeterminate = false;
     }
-    // initialize theme handling
     this.applyTheme();
+  }
+
+  private createDotsLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-dots-wrapper';
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'lumina-dot';
+      dot.style.animationDelay = `${i * 0.15}s`;
+      wrapper.appendChild(dot);
+    }
+    return wrapper;
+  }
+
+  private createBarsLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-bars-wrapper';
+    for (let i = 0; i < 5; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'lumina-bar';
+      bar.style.animationDelay = `${i * 0.1}s`;
+      wrapper.appendChild(bar);
+    }
+    return wrapper;
+  }
+
+  private createPulseLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-pulse-wrapper';
+    for (let i = 0; i < 3; i++) {
+      const ring = document.createElement('div');
+      ring.className = 'lumina-pulse-ring';
+      ring.style.animationDelay = `${i * 0.4}s`;
+      wrapper.appendChild(ring);
+    }
+    return wrapper;
+  }
+
+  private createGradientRingLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-gradient-ring';
+    return wrapper;
+  }
+
+  private createOrbitLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-orbit-wrapper';
+    for (let i = 0; i < 3; i++) {
+      const orbit = document.createElement('div');
+      orbit.className = 'lumina-orbit';
+      orbit.style.animationDelay = `${i * 0.4}s`;
+      const planet = document.createElement('div');
+      planet.className = 'lumina-planet';
+      orbit.appendChild(planet);
+      wrapper.appendChild(orbit);
+    }
+    return wrapper;
+  }
+
+  private createWaveLoader(): HTMLElement {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lumina-wave-wrapper';
+    for (let i = 0; i < 5; i++) {
+      const wave = document.createElement('div');
+      wave.className = 'lumina-wave';
+      wave.style.animationDelay = `${i * 0.1}s`;
+      wrapper.appendChild(wave);
+    }
+    return wrapper;
   }
 
   private createImageElement(): HTMLElement {
@@ -102,7 +178,6 @@ export class LuminaLoader {
       wrapper.appendChild(track);
       this.progressEl = bar;
     } else {
-      // circular
       const size = this.opts.size || 80;
       const svgNS = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(svgNS, 'svg');
@@ -142,7 +217,6 @@ export class LuminaLoader {
   }
 
   private createOverlay(target: HTMLElement | null) {
-    // create overlay wrapper
     const overlay = document.createElement('div');
     overlay.className = 'lumina-overlay';
     overlay.setAttribute('role', 'dialog');
@@ -154,10 +228,10 @@ export class LuminaLoader {
     const backdropOpts = this.opts.backdrop || {};
     const opacity =
       typeof backdropOpts.opacity === 'number' ? backdropOpts.opacity : 0.5;
-    const color = backdropOpts.color || 'black';
+    const color = backdropOpts.color || 'rgba(0, 0, 0, 0.8)';
     const blur = backdropOpts.blur
-      ? `backdrop-filter: blur(${backdropOpts.blur});`
-      : '';
+      ? `backdrop-filter: blur(${backdropOpts.blur});-webkit-backdrop-filter: blur(${backdropOpts.blur});`
+      : 'backdrop-filter: blur(8px);-webkit-backdrop-filter: blur(8px);';
     backdrop.setAttribute(
       'style',
       `background:${color};opacity:${opacity};${blur}`,
@@ -169,12 +243,10 @@ export class LuminaLoader {
 
     overlay.appendChild(backdrop);
 
-    // set z-index (preserve any previously set inline style)
     const z = this.opts.overlayZIndex ?? 1000;
     const prevStyle = overlay.getAttribute('style') || '';
     overlay.setAttribute('style', `${prevStyle};z-index:${z}`);
 
-    // apply initial theme attribute
     const theme = this.resolveTheme();
     if (theme) overlay.setAttribute('data-lumina-theme', theme);
 
@@ -187,7 +259,6 @@ export class LuminaLoader {
     }
 
     if (!mountRoot && target instanceof HTMLElement) mountRoot = target;
-
     if (!mountRoot && this.hasAppendChild(target)) {
       mountRoot = target as unknown as HTMLElement;
     }
@@ -205,7 +276,6 @@ export class LuminaLoader {
     this.overlayEl = overlay;
     this.backdropEl = backdrop;
 
-    // if auto theme, watch media changes
     if ((this.opts.theme ?? 'auto') === 'auto') this.watchTheme();
   }
 
@@ -220,10 +290,10 @@ export class LuminaLoader {
       const last = focusable[focusable.length - 1];
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
-        (last as HTMLElement).focus();
+        last.focus();
       } else if (!e.shiftKey && document.activeElement === last) {
         e.preventDefault();
-        (first as HTMLElement).focus();
+        first.focus();
       }
     } else if (e.key === 'Escape') {
       this.hide();
@@ -233,15 +303,12 @@ export class LuminaLoader {
   private trapFocus() {
     if (!this.overlayEl) return;
     this.prevActiveElement = document.activeElement;
-    // focus first focusable or overlay
     const focusable = this.overlayEl.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
     );
-    if (focusable.length) (focusable[0] as HTMLElement).focus();
+    if (focusable.length) focusable[0].focus();
     else this.overlayEl.focus();
     document.addEventListener('keydown', this.onKeydownHandler);
-
-    // ensure theme attribute stays in sync for auto
     if ((this.opts.theme ?? 'auto') === 'auto')
       this.applyThemeToElement(this.overlayEl);
   }
@@ -256,7 +323,6 @@ export class LuminaLoader {
   private resolveTheme(): ThemeOption | null {
     const theme = this.opts.theme ?? 'auto';
     if (theme === 'light' || theme === 'dark') return theme;
-    // auto: use matchMedia (guard if not a function)
     if (
       typeof window !== 'undefined' &&
       typeof window.matchMedia === 'function'
@@ -276,7 +342,6 @@ export class LuminaLoader {
     try {
       this.themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       this.themeListener = (e: MediaQueryListEvent) => {
-        // update stored theme and overlay attribute
         this.currentTheme = e.matches ? 'dark' : 'light';
         this.applyThemeToElement(this.overlayEl);
       };
@@ -288,14 +353,12 @@ export class LuminaLoader {
             this.themeListener as unknown as EventListener,
           );
         } else if ('addListener' in mq) {
-          // older APIs
-          (
-            mq as unknown as { addListener: (f: EventListener) => void }
-          ).addListener(this.themeListener as unknown as EventListener);
+          (mq as any).addListener(
+            this.themeListener as unknown as EventListener,
+          );
         }
       }
     } catch (e) {
-      // ignore if not supported
       this.themeMediaQuery = null;
       this.themeListener = null;
     }
@@ -306,7 +369,7 @@ export class LuminaLoader {
       typeof v === 'object' &&
       v !== null &&
       'appendChild' in v &&
-      typeof (v as { appendChild?: unknown }).appendChild === 'function'
+      typeof (v as any).appendChild === 'function'
     );
   }
 
@@ -314,12 +377,9 @@ export class LuminaLoader {
     const theme = this.opts.theme ?? 'auto';
     if (theme === 'light' || theme === 'dark') {
       this.currentTheme = theme;
-      // no overlay yet; if mounted, apply
       this.applyThemeToElement(this.overlayEl || this.container);
       return;
     }
-
-    // auto: determine current system preference and set
     if (typeof window !== 'undefined' && 'matchMedia' in window) {
       try {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -330,17 +390,14 @@ export class LuminaLoader {
     } else {
       this.currentTheme = 'light';
     }
-    // if mounted, apply
     this.applyThemeToElement(this.overlayEl || this.container);
   }
 
   private releaseFocus() {
     document.removeEventListener('keydown', this.onKeydownHandler);
     if (this.prevActiveElement instanceof HTMLElement)
-      (this.prevActiveElement as HTMLElement).focus();
+      this.prevActiveElement.focus();
     this.prevActiveElement = null;
-
-    // stop watching media
     if (this.themeMediaQuery && this.themeListener) {
       try {
         if ('removeEventListener' in this.themeMediaQuery) {
@@ -349,14 +406,13 @@ export class LuminaLoader {
             this.themeListener,
           );
         } else if ('removeListener' in this.themeMediaQuery) {
-          (
-            this.themeMediaQuery as unknown as {
-              removeListener: (f: EventListener) => void;
-            }
-          ).removeListener(this.themeListener as unknown as EventListener);
+          (this.themeMediaQuery as any).removeListener(
+            this.themeListener as unknown as EventListener,
+          );
         }
       } catch (e) {
-        // fallback
+        // Ignore errors when removing listeners from older browsers
+        void e;
       }
       this.themeListener = null;
       this.themeMediaQuery = null;
@@ -370,45 +426,91 @@ export class LuminaLoader {
         ? document.querySelector(this.opts.target)
         : (this.opts.target ?? document.body);
 
-    // create root
     const el = document.createElement('div');
     el.className = 'lumina-root';
     el.setAttribute('aria-hidden', 'true');
 
-    // overlay handling
     if (this.opts.overlay) {
       this.createOverlay(target as HTMLElement);
-      // overlay's content container will receive loader
       const contentHost = document.createElement('div');
       contentHost.className = 'lumina-overlay-content';
-      if (this.opts.type === 'image' && this.opts.image) {
-        const content = this.createImageElement();
-        const loader = document.createElement('div');
-        loader.className = 'lumina-loader lumina-image';
-        loader.appendChild(content);
-        contentHost.appendChild(loader);
-      } else if (this.opts.type === 'progress') {
+
+      let loaderContent: HTMLElement;
+      const type = this.opts.type || 'spinner';
+
+      if (type === 'image' && this.opts.image) {
+        loaderContent = this.createImageElement();
+      } else if (type === 'progress') {
         this.renderProgress(contentHost);
+        loaderContent = contentHost.querySelector(
+          '.lumina-progress',
+        ) as HTMLElement;
+      } else if (type === 'dots') {
+        loaderContent = this.createDotsLoader();
+      } else if (type === 'bars') {
+        loaderContent = this.createBarsLoader();
+      } else if (type === 'pulse') {
+        loaderContent = this.createPulseLoader();
+      } else if (type === 'gradient-ring') {
+        loaderContent = this.createGradientRingLoader();
+      } else if (type === 'orbit') {
+        loaderContent = this.createOrbitLoader();
+      } else if (type === 'wave') {
+        loaderContent = this.createWaveLoader();
       } else {
+        loaderContent = document.createElement('div');
+        loaderContent.className = 'lumina-spinner';
+      }
+
+      if (type !== 'progress') {
         const loader = document.createElement('div');
-        loader.className = `lumina-loader lumina-${this.opts.type || 'spinner'}`;
-        loader.innerHTML = `<div class="lumina-spinner-inner"></div>`;
+        loader.className = `lumina-loader lumina-${type}`;
+        loader.appendChild(loaderContent);
         contentHost.appendChild(loader);
       }
+
+      if (this.opts.text) {
+        const textEl = document.createElement('div');
+        textEl.className = 'lumina-text';
+        textEl.textContent = this.opts.text;
+        contentHost.appendChild(textEl);
+      }
+
       if (this.overlayEl) this.overlayEl.appendChild(contentHost);
       this.container = this.overlayEl;
     } else {
-      if (this.opts.type === 'image' && this.opts.image) {
-        const content = this.createImageElement();
-        const loader = document.createElement('div');
-        loader.className = 'lumina-loader lumina-image';
-        loader.appendChild(content);
-        el.appendChild(loader);
-      } else if (this.opts.type === 'progress') {
+      const type = this.opts.type || 'spinner';
+      let loaderContent: HTMLElement;
+
+      if (type === 'image' && this.opts.image) {
+        loaderContent = this.createImageElement();
+      } else if (type === 'progress') {
         this.renderProgress(el);
+        loaderContent = el.querySelector('.lumina-progress') as HTMLElement;
+      } else if (type === 'dots') {
+        loaderContent = this.createDotsLoader();
+      } else if (type === 'bars') {
+        loaderContent = this.createBarsLoader();
+      } else if (type === 'pulse') {
+        loaderContent = this.createPulseLoader();
+      } else if (type === 'gradient-ring') {
+        loaderContent = this.createGradientRingLoader();
+      } else if (type === 'orbit') {
+        loaderContent = this.createOrbitLoader();
+      } else if (type === 'wave') {
+        loaderContent = this.createWaveLoader();
       } else {
-        el.innerHTML = `<div class="lumina-loader lumina-${this.opts.type || 'spinner'}"><div class="lumina-spinner-inner"></div></div>`; // simple inner spinner element (inner class avoids colliding with loader type class)
+        loaderContent = document.createElement('div');
+        loaderContent.className = 'lumina-spinner';
       }
+
+      if (type !== 'progress') {
+        const loader = document.createElement('div');
+        loader.className = `lumina-loader lumina-${type}`;
+        loader.appendChild(loaderContent);
+        el.appendChild(loader);
+      }
+
       if (typeof this.opts.size === 'number')
         el.style.setProperty('--lumina-size', `${this.opts.size}px`);
       if (typeof this.opts.color === 'string')
@@ -450,9 +552,7 @@ export class LuminaLoader {
     if (!this.container) this.mount();
     this.container?.setAttribute('aria-hidden', 'false');
 
-    // overlay specific behavior
     if (this.overlayEl) {
-      // set aria-busy on target section
       const target =
         typeof this.opts.target === 'string'
           ? document.querySelector(this.opts.target)
@@ -488,7 +588,6 @@ export class LuminaLoader {
           : (this.opts.target ?? document.body);
       if (target instanceof HTMLElement) target.removeAttribute('aria-busy');
       this.releaseFocus();
-      // remove overlay DOM
       this.overlayEl.remove();
       this.overlayEl = null;
       this.backdropEl = null;
@@ -508,8 +607,7 @@ export class LuminaLoader {
 
     if (
       roleEl.classList.contains('lumina-progress-linear') ||
-      (roleEl.classList.contains('lumina-progress') &&
-        roleEl.querySelector('.lumina-progress-bar'))
+      roleEl.querySelector('.lumina-progress-bar')
     ) {
       const bar = roleEl.querySelector(
         '.lumina-progress-bar',

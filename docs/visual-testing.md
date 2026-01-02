@@ -28,6 +28,7 @@ Notes & troubleshooting:
 
 - To debug in headed mode: run Playwright with `--headed` and `--debug` or start Storybook (`npm run storybook`) and point Playwright to the local URL.
 - Artifacts (screenshots/traces) are stored in `test-results/` by default; check this folder after failures.
+- Some Storybook setups serve a manager page with the preview inside an iframe. The tests and the included `scripts/debug-spinner.js` are now iframe-aware — if a test times out, run the debug script or inspect `test-results/spinner.html` to see whether the spinner was inside the preview iframe.
 - If tests fail due to timeouts, increase Playwright timeouts in `playwright.config.ts` or run a single test with `npx playwright test tests/visual/<test-file> -g "pattern" --headed`.
 - If Playwright browsers are missing, run `npx playwright install`.
 

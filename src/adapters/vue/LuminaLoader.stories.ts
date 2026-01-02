@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { action } from '@storybook/addon-actions';
 import type { DefineComponent } from 'vue';
 import LuminaLoader from './LuminaLoader.vue';
 
@@ -8,6 +9,17 @@ const meta: Meta<typeof LuminaLoader> = {
     Record<string, unknown>,
     Record<string, unknown>
   >,
+  args: {
+    theme: 'auto',
+  },
+  argTypes: {
+    onShow: { table: { disable: true } },
+    onHide: { table: { disable: true } },
+    theme: {
+      control: { type: 'radio', options: ['auto', 'light', 'dark'] },
+      description: 'Theme to apply (auto adapts to prefers-color-scheme)',
+    },
+  },
 };
 
 export default meta;
@@ -15,7 +27,14 @@ export default meta;
 type Story = StoryObj<typeof LuminaLoader>;
 
 export const Spinner: Story = {
-  args: { type: 'spinner', show: true, size: 48, speed: 1 },
+  args: {
+    type: 'spinner',
+    show: true,
+    size: 48,
+    speed: 1,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
+  },
   argTypes: {
     size: { control: { type: 'range', min: 16, max: 200 } },
     speed: { control: { type: 'number', min: 0.2, max: 5, step: 0.1 } },
@@ -31,6 +50,8 @@ export const ImageRotate: Story = {
     imageAnimation: 'rotate',
     size: 80,
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };
 
@@ -41,6 +62,8 @@ export const ProgressLinear: Story = {
     progress: 45,
     size: 200,
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };
 
@@ -50,5 +73,7 @@ export const Overlay: Story = {
     overlay: true,
     backdrop: { opacity: 0.5 },
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };

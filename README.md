@@ -73,6 +73,71 @@ Options:
 - `backdrop`: `{ opacity, blur, color, clickToClose }`
 - `overlayZIndex`: number
 
+### Loader types
+
+Lumina supports several built-in loader styles via the `type` option. Use `size`, `color`, and `speed` to tune appearance and motion:
+
+- `spinner` — a classic rotating spinner
+- `dots` — three pulsing dots
+- `bars` — rising bars rhythm
+- `pulse` — concentric expanding rings
+- `gradient-ring` — a conic-gradient ring with soft glow
+- `orbit` — orbiting dots (planetary motion)
+- `wave` — wave-like horizontal bars
+- `image` — custom image or SVG (see Image / logo loader above)
+- `progress` — determinate progress (linear or circular)
+
+Example:
+
+```ts
+createLoader({
+  target: '#app',
+  type: 'gradient-ring',
+  size: 64,
+  color: '#4fa94d',
+  speed: 1.2,
+});
+```
+
+### Design tokens & theming
+
+For easy global theming and consistent sizing, Lumina exposes a few CSS custom properties that you can set on `:root` or any container:
+
+- `--lumina-size` — base size (px)
+- `--lumina-color` — accent color used by most loaders
+- `--lumina-spin-speed` — spin/animation duration (s)
+- `--lumina-ease` — easing curve used for animations
+
+The loader respects the user's `prefers-reduced-motion` setting and also supports a `theme` option (`auto` | `light` | `dark`) to adapt coloring.
+
+Example:
+
+```css
+:root {
+  --lumina-color: #4fa94d;
+  --lumina-size: 48px;
+  --lumina-spin-speed: 1s;
+}
+```
+
+### Visual previews
+
+Quick visual references for each `type` (SVG thumbnails are in `docs/assets/`):
+
+| Type          | Preview                                         |
+| ------------- | ----------------------------------------------- |
+| spinner       | ![spinner](docs/assets/spinner.svg)             |
+| dots          | ![dots](docs/assets/dots.svg)                   |
+| bars          | ![bars](docs/assets/bars.svg)                   |
+| pulse         | ![pulse](docs/assets/pulse.svg)                 |
+| gradient-ring | ![gradient-ring](docs/assets/gradient-ring.svg) |
+| orbit         | ![orbit](docs/assets/orbit.svg)                 |
+| wave          | ![wave](docs/assets/wave.svg)                   |
+| image         | ![image](docs/assets/image.svg)                 |
+| progress      | ![progress](docs/assets/progress.svg)           |
+
+> Tip: open the `Design Tokens` page in Storybook to see these thumbnails and try different token values via CSS.
+
 ### React (adapter)
 
 A thin React wrapper is available that reuses the core engine. It mounts the loader and destroys it on unmount. Example:

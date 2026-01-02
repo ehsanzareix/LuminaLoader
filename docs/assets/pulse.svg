@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 100 100" role="img" aria-label="Pulse preview">
+  <circle cx="50" cy="50" r="12" fill="#4fa94d" />
+  <circle cx="50" cy="50" r="24" fill="none" stroke="#6ad3a1" stroke-width="3" opacity="0.9" />
+</svg>

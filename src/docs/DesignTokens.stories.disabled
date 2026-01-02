@@ -1,0 +1,19 @@
+---
+name: Design Tokens (moved)
+route: /design-tokens-moved
+---
+
+import { Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Documentation/Design Tokens (moved)" />
+
+# Design Tokens (moved)
+
+This story exists to redirect users to the new documentation page. Open **Documentation → Design Tokens** for the full, interactive docs and live demo.
+
+<Story name="OpenDesignDocs">
+  <div>
+    For the full docs, open the <a href="/docs/design-tokens">Design Tokens</a> documentation page in Storybook.
+  </div>
+</Story>
+
