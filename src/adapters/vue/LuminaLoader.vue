@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, watch, toRef } from 'vue';
+import { onMounted, onBeforeUnmount, watch, toRef, ref } from 'vue';
 import { createLoader } from '../../api';
 import type { LoaderOptions } from '../../core/LuminaLoader';
 
@@ -20,7 +20,11 @@ const host = ref<HTMLElement | null>(null);
 
 function mountLoader() {
   if (loader) return;
-  const targetEl = props.container ?? host.value ?? document.body;
+  const hostIsConnected = !!(
+    host.value && (host.value as HTMLElement).isConnected
+  );
+  const targetEl =
+    props.container ?? (hostIsConnected ? host.value : document.body);
   const finalTarget =
     props.overlay && !props.container ? document.body : targetEl;
   loader = createLoader({
