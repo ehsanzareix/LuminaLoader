@@ -1,7 +1,23 @@
 :root {
+  /* Design tokens */
   --lumina-color: #4fa94d;
-  --lumina-size: 48px;
-  --lumina-speed: 1s;
+  --lumina-color-foreground: #ffffff;
+
+  --lumina-size-sm: 24px;
+  --lumina-size-md: 48px;
+  --lumina-size-lg: 80px;
+  --lumina-size: var(--lumina-size-md);
+
+  --lumina-border-width: 4px;
+
+  --lumina-duration-fast: 200ms;
+  --lumina-duration-medium: 400ms;
+  --lumina-duration-long: 800ms;
+
+  --lumina-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --lumina-spin-speed: 1s;
+
   --lumina-backdrop: rgba(0, 0, 0, 0.5);
 }
 
@@ -14,6 +30,21 @@
   --lumina-color: #4fa94d;
   --lumina-backdrop: rgba(0, 0, 0, 0.5);
 }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lumina-spin-speed: 0s;
+  }
+  .lumina-spinner-inner,
+  .lumina-rotate,
+  .lumina-pulse,
+  .lumina-scale,
+  .lumina-indeterminate::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 .lumina-root {
   display: flex;
   align-items: center;
@@ -24,18 +55,50 @@
   width: var(--lumina-size);
   height: var(--lumina-size);
 }
-.lumina-spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-top-color: var(--lumina-color);
+.lumina-spinner-inner {
+  width: var(--lumina-size);
+  height: var(--lumina-size);
   border-radius: 50%;
-  animation: lumina-spin var(--lumina-speed) linear infinite;
-  width: 100%;
-  height: 100%;
+  position: relative;
+  overflow: hidden;
+  /* Use a conic-gradient for a modern ring */
+  background: conic-gradient(
+    var(--lumina-color) 0deg,
+    var(--lumina-color) 90deg,
+    rgba(0, 0, 0, 0.08) 90deg 360deg
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - calc(var(--lumina-border-width) * 1px)),
+    black calc(100% - calc(var(--lumina-border-width) * 1px))
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - calc(var(--lumina-border-width) * 1px)),
+    black calc(100% - calc(var(--lumina-border-width) * 1px))
+  );
+  animation: lumina-spin var(--lumina-spin-speed) var(--lumina-ease) infinite;
 }
+
+/* Make spinner smoother on high-DPI devices */
+@media (prefers-reduced-motion: no-preference) {
+  .lumina-spinner-inner {
+    will-change: transform;
+  }
+}
+
 @keyframes lumina-spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Updated progress bar transition to use tokens */
+.lumina-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--lumina-color);
+  transition: width var(--lumina-duration-medium) var(--lumina-ease);
 }
 
 /* Image loader styles */
@@ -52,7 +115,7 @@
 
 /* Image animations */
 .lumina-rotate {
-  animation: lumina-rotate var(--lumina-speed) linear infinite;
+  animation: lumina-rotate var(--lumina-spin-speed) linear infinite;
 }
 @keyframes lumina-rotate {
   to {
@@ -61,7 +124,8 @@
 }
 
 .lumina-pulse {
-  animation: lumina-pulse var(--lumina-speed) ease-in-out infinite;
+  animation: lumina-pulse var(--lumina-duration-medium) var(--lumina-ease)
+    infinite;
 }
 @keyframes lumina-pulse {
   0% {
@@ -79,7 +143,8 @@
 }
 
 .lumina-scale {
-  animation: lumina-scale calc(var(--lumina-speed) * 2) ease-in-out infinite;
+  animation: lumina-scale calc(var(--lumina-duration-long)) var(--lumina-ease)
+    infinite;
 }
 @keyframes lumina-scale {
   0% {

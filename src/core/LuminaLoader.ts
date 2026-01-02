@@ -141,7 +141,7 @@ export class LuminaLoader {
     container.appendChild(wrapper);
   }
 
-  private createOverlay(target: HTMLElement) {
+  private createOverlay(target: HTMLElement | null) {
     // create overlay wrapper
     const overlay = document.createElement('div');
     overlay.className = 'lumina-overlay';
@@ -178,8 +178,34 @@ export class LuminaLoader {
     const theme = this.resolveTheme();
     if (theme) overlay.setAttribute('data-lumina-theme', theme);
 
-    // insert into DOM
-    (target ?? document.body).appendChild(overlay);
+    let mountRoot: HTMLElement | null = null;
+    try {
+      if (typeof document !== 'undefined' && document.body)
+        mountRoot = document.body;
+    } catch (e) {
+      mountRoot = null;
+    }
+
+    if (!mountRoot && target instanceof HTMLElement) mountRoot = target;
+
+    if (
+      !mountRoot &&
+      target &&
+      typeof (target as any).appendChild === 'function'
+    ) {
+      // @ts-ignore - dynamic check
+      mountRoot = target as unknown as HTMLElement;
+    }
+
+    if (mountRoot && typeof mountRoot.appendChild === 'function') {
+      mountRoot.appendChild(overlay);
+    } else if (typeof document !== 'undefined' && document.body) {
+      document.body.appendChild(overlay);
+    } else {
+      console.warn(
+        'LuminaLoader: unable to mount overlay — no valid mount root found.',
+      );
+    }
 
     this.overlayEl = overlay;
     this.backdropEl = backdrop;
@@ -362,7 +388,7 @@ export class LuminaLoader {
       } else {
         const loader = document.createElement('div');
         loader.className = `lumina-loader lumina-${this.opts.type || 'spinner'}`;
-        loader.innerHTML = `<div class="lumina-spinner"></div>`;
+        loader.innerHTML = `<div class=\"lumina-spinner-inner\"></div>`;
         contentHost.appendChild(loader);
       }
       if (this.overlayEl) this.overlayEl.appendChild(contentHost);
@@ -377,9 +403,42 @@ export class LuminaLoader {
       } else if (this.opts.type === 'progress') {
         this.renderProgress(el);
       } else {
-        el.innerHTML = `<div class="lumina-loader lumina-${this.opts.type || 'spinner'}"><div class="lumina-spinner"></div></div>`; // simple inner spinner element
+        el.innerHTML = `<div class="lumina-loader lumina-${this.opts.type || 'spinner'}"><div class="lumina-spinner-inner"></div></div>`; // simple inner spinner element (inner class avoids colliding with loader type class)
       }
-      (target ?? document.body).appendChild(el);
+      if (typeof this.opts.size === 'number')
+        el.style.setProperty('--lumina-size', `${this.opts.size}px`);
+      if (typeof this.opts.color === 'string')
+        el.style.setProperty('--lumina-color', this.opts.color);
+      if (typeof this.opts.speed === 'number')
+        el.style.setProperty('--lumina-spin-speed', `${this.opts.speed}s`);
+
+      let resolvedTarget: HTMLElement | null = null;
+      try {
+        if (typeof this.opts.target === 'string') {
+          const q = document.querySelector(this.opts.target);
+          if (q instanceof HTMLElement) resolvedTarget = q;
+        } else if (this.opts.target instanceof HTMLElement) {
+          resolvedTarget = this.opts.target;
+        }
+      } catch (e) {}
+
+      if (!resolvedTarget && typeof document !== 'undefined' && document.body) {
+        resolvedTarget = document.body;
+      }
+
+      if (
+        resolvedTarget &&
+        typeof (resolvedTarget as any).appendChild === 'function'
+      ) {
+        resolvedTarget.appendChild(el);
+      } else if (typeof document !== 'undefined' && document.body) {
+        document.body.appendChild(el);
+      } else {
+        console.warn(
+          'LuminaLoader: unable to mount loader — no valid mount root found.',
+        );
+      }
+
       this.container = el;
     }
   }
@@ -397,6 +456,22 @@ export class LuminaLoader {
           : (this.opts.target ?? document.body);
       if (target instanceof HTMLElement)
         target.setAttribute('aria-busy', 'true');
+
+      const contentHost = this.overlayEl.querySelector(
+        '.lumina-overlay-content',
+      );
+      if (contentHost instanceof HTMLElement) {
+        if (typeof this.opts.size === 'number')
+          contentHost.style.setProperty('--lumina-size', `${this.opts.size}px`);
+        if (typeof this.opts.color === 'string')
+          contentHost.style.setProperty('--lumina-color', this.opts.color);
+        if (typeof this.opts.speed === 'number')
+          contentHost.style.setProperty(
+            '--lumina-spin-speed',
+            `${this.opts.speed}s`,
+          );
+      }
+
       this.trapFocus();
     }
   }

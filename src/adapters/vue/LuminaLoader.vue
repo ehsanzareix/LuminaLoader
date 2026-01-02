@@ -1,6 +1,6 @@
 <template>
-  <!-- This component is headless and mounts the core loader; no DOM output required -->
-  <div v-if="false"></div>
+  <!-- Render a host element so the loader can mount inline inside Storybook / apps -->
+  <div ref="host" />
 </template>
 
 <script setup lang="ts">
@@ -16,12 +16,16 @@ interface Props extends Omit<LoaderOptions, 'target'> {
 const props = defineProps<Props>();
 
 let loader: ReturnType<typeof createLoader> | null = null;
+const host = ref<HTMLElement | null>(null);
 
 function mountLoader() {
   if (loader) return;
+  const targetEl = props.container ?? host.value ?? document.body;
+  const finalTarget =
+    props.overlay && !props.container ? document.body : targetEl;
   loader = createLoader({
     ...(props as LoaderOptions),
-    target: props.container ?? document.body,
+    target: finalTarget,
   });
   if (props.show ?? true) loader.show();
 }

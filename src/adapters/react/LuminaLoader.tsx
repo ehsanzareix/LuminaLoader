@@ -13,16 +13,24 @@ export const LuminaLoaderReact: FC<LuminaReactProps> = ({
   container,
   ...opts
 }) => {
+  const hostRef = React.useRef<HTMLElement | null>(null);
+
   useEffect(() => {
+    const targetEl = container
+      ? (container as HTMLElement)
+      : (hostRef.current ?? document.body);
+
+    const finalTarget = opts.overlay && !container ? document.body : targetEl;
+
     const loader = createLoader({
       ...(opts as LoaderOptions),
-      target: container ?? document.body,
+      target: finalTarget,
     });
     if (show) loader.show();
     return () => loader.destroy();
   }, [show, container, JSON.stringify(opts)]);
 
-  return null;
+  return <span ref={hostRef as any} />;
 };
 
 export default LuminaLoaderReact;
