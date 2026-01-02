@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
+import { action } from '@storybook/addon-actions';
 import type { DefineComponent } from 'vue';
 import LuminaLoader from './LuminaLoader.vue';
 
@@ -8,6 +9,17 @@ const meta: Meta<typeof LuminaLoader> = {
     Record<string, unknown>,
     Record<string, unknown>
   >,
+  args: {
+    theme: 'auto',
+  },
+  argTypes: {
+    onShow: { table: { disable: true } },
+    onHide: { table: { disable: true } },
+    theme: {
+      control: { type: 'radio', options: ['auto', 'light', 'dark'] },
+      description: 'Theme to apply (auto adapts to prefers-color-scheme)',
+    },
+  },
 };
 
 export default meta;
@@ -15,16 +27,31 @@ export default meta;
 type Story = StoryObj<typeof LuminaLoader>;
 
 export const Spinner: Story = {
-  args: { type: 'spinner', show: true },
+  args: {
+    type: 'spinner',
+    show: true,
+    size: 48,
+    speed: 1,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
+  },
+  argTypes: {
+    size: { control: { type: 'range', min: 16, max: 200 } },
+    speed: { control: { type: 'number', min: 0.2, max: 5, step: 0.1 } },
+    color: { control: 'color' },
+  },
 };
 
 export const ImageRotate: Story = {
   args: {
     type: 'image',
-    image: '/logo.svg',
+    image:
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="%23f3f4f6"/><circle cx="40" cy="40" r="24" fill="%234fa94d"/></svg>',
     imageAnimation: 'rotate',
     size: 80,
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };
 
@@ -35,6 +62,8 @@ export const ProgressLinear: Story = {
     progress: 45,
     size: 200,
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };
 
@@ -44,5 +73,7 @@ export const Overlay: Story = {
     overlay: true,
     backdrop: { opacity: 0.5 },
     show: true,
+    onShow: action('onShow'),
+    onHide: action('onHide'),
   },
 };

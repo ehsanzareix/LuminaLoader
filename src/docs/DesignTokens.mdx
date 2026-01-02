@@ -1,0 +1,48 @@
+---
+title: 'Design Tokens'
+---
+
+# Design tokens
+
+Lumina exposes a small set of CSS custom properties for easy theming and sizing.
+
+- `--lumina-size` — base size (px)
+- `--lumina-color` — accent color used by most loaders
+- `--lumina-spin-speed` — spin/animation duration (s)
+- `--lumina-ease` — easing curve used for animations
+
+## Usage
+
+Set tokens on `:root` or a container element to scope them.
+
+```css
+:root {
+  --lumina-color: #4fa94d;
+  --lumina-size: 48px;
+  --lumina-spin-speed: 1s;
+}
+```
+
+## Visual previews
+
+Below are small preview illustrations for each loader type — use them to quickly recognize styles in the docs and storybook.
+
+<div style="display:flex;gap:16px;flex-wrap:wrap">
+  <img src="/docs/assets/spinner-anim.svg" alt="spinner" width="100" />
+  <img src="/docs/assets/dots-anim.svg" alt="dots" width="100" />
+  <img src="/docs/assets/bars-anim.svg" alt="bars" width="100" />
+  <img src="/docs/assets/pulse-anim.svg" alt="pulse" width="100" />
+  <img
+    src="/docs/assets/gradient-ring-anim.svg"
+    alt="gradient ring"
+    width="100"
+  />
+  <img src="/docs/assets/orbit-anim.svg" alt="orbit" width="100" />
+  <img src="/docs/assets/wave-anim.svg" alt="wave" width="100" />
+  <img src="/docs/assets/image.svg" alt="image" width="100" />
+  <img src="/docs/assets/progress-anim.svg" alt="progress" width="100" />
+</div>
+
+### Live demo (interactive)
+
+Try the live demo by opening **Documentation → Design Tokens → Live Demo** (or run the `Live` story under this section). This avoids MDX inline story rendering issues in some Storybook setups.

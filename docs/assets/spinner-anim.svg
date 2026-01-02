@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="140" height="140" role="img" aria-label="Spinner animated preview">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#4fa94d"/>
+      <stop offset="100%" stop-color="#6ad3a1"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .ring { transform-origin: 50% 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <g class="ring">
+    <circle cx="50" cy="50" r="30" stroke="url(#g)" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.95" />
+  </g>
+  <circle cx="50" cy="18" r="4" fill="#4fa94d" />
+</svg>

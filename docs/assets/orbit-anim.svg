@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="140" height="140" role="img" aria-label="Orbit animated preview">
+  <style>
+    .p{ transform-origin:50% 50%; animation: orbit 2s linear infinite; }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+  </style>
+  <circle cx="50" cy="50" r="28" stroke="#dff8ef" stroke-width="2" fill="none" />
+  <g class="p"><circle cx="74" cy="50" r="4" fill="#4fa94d" /></g>
+</svg>
