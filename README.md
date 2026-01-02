@@ -1,6 +1,10 @@
 # LuminaLoader
 
+[![Tests](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/ci.yml/badge.svg)](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/ci.yml) [![Visual tests](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/visual.yml/badge.svg)](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/visual.yml) [![Releases](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/release.yml/badge.svg)](https://github.com/ehsanzareix/LuminaLoader/actions/workflows/release.yml)
+
 Lightweight, framework-agnostic loader with custom logo support.
+
+Deployed Storybook: https://ehsanzareix.github.io/LuminaLoader/
 
 Quick start
 
@@ -120,6 +124,10 @@ npm run storybook
 npm run storybook:vue
 ```
 
-```
+**Visual tests**
 
-```
+Visual tests run in CI with Playwright; see `docs/visual-testing.md` for how to run them locally and troubleshoot failures.
+
+**Updating the published Storybook**
+
+Storybook is built and deployed automatically from `main` via GitHub Actions (see `.github/workflows/pages-deploy.yml`). To update the published site, push changes to `main`.
