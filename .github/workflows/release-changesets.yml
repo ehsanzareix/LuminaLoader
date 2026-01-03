@@ -32,6 +32,13 @@ jobs:
           const fs = require('fs');
           const path = require('path');
 
+          try {
+            execSync('git remote set-url origin https://github.com/ehsanzareix/LuminaLoader.git');
+            console.log('Set origin to HTTPS');
+          } catch (e) {
+            console.warn('Could not set origin URL:', e.message);
+          }
+
           const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
           const workspaces = pkg.workspaces || [];
 
@@ -43,13 +50,14 @@ jobs:
               const pjson = JSON.parse(fs.readFileSync(path.join(d,'package.json'),'utf8'));
               try {
                 console.log('Publishing', pjson.name);
-                execSync(`npm publish ${d} --access public`, {stdio: 'inherit'});
+                execSync('npm publish --access public', { cwd: d, stdio: 'inherit' });
               } catch (e) {
                 const m = e && (e.stderr && e.stderr.toString()) || (e && e.message) || '';
                 if (m.includes('You cannot publish over the previously published versions') || m.includes('403')) {
                   console.log('Already published, skipping', pjson.name);
                   continue;
                 }
+                console.warn('Publish failed for', pjson.name, e && e.message);
                 throw e;
               }
             }
