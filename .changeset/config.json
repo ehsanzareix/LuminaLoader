@@ -1,0 +1,11 @@
+{
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "your-org/lumina-loader" }
+  ],
+  "commit": false,
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
