@@ -3,7 +3,7 @@
 This repository is being converted to a workspace-based monorepo. Key points:
 
 - Workspace pattern: packages/\*
-- Core package: `packages/core` exposes the runtime (`@lumina/core`).
+- Core package: `packages/core` exposes the runtime (`lumina-loader`).
 - Building: `npm run build:core` builds the package to `packages/core/dist`.
 - Releasing: Changesets is used for managing per-package releases. Use `npm run changeset` to create a changeset and then open a PR. The Changesets release workflow (on main) will publish packages when changesets are merged.
 
