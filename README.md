@@ -120,24 +120,6 @@ Example:
 }
 ```
 
-### Visual previews
-
-Quick visual references for each `type` (SVG thumbnails are in `docs/assets/`):
-
-| Type          | Preview                                         |
-| ------------- | ----------------------------------------------- |
-| spinner       | ![spinner](docs/assets/spinner.svg)             |
-| dots          | ![dots](docs/assets/dots.svg)                   |
-| bars          | ![bars](docs/assets/bars.svg)                   |
-| pulse         | ![pulse](docs/assets/pulse.svg)                 |
-| gradient-ring | ![gradient-ring](docs/assets/gradient-ring.svg) |
-| orbit         | ![orbit](docs/assets/orbit.svg)                 |
-| wave          | ![wave](docs/assets/wave.svg)                   |
-| image         | ![image](docs/assets/image.svg)                 |
-| progress      | ![progress](docs/assets/progress.svg)           |
-
-> Tip: open the `Design Tokens` page in Storybook to see these thumbnails and try different token values via CSS.
-
 ### React (adapter)
 
 A thin React wrapper is available that reuses the core engine. It mounts the loader and destroys it on unmount. Example:
