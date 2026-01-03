@@ -29,7 +29,7 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
       .waitForSelector('#storybook-preview-iframe[data-is-loaded="true"]', {
         timeout: 10000,
       })
-      .catch(() => {});
+      .catch(() => undefined);
     const frameLocator = page.frameLocator('#storybook-preview-iframe');
     spinnerLocator = frameLocator.locator(selector).first();
     // Wait for the spinner to be attached inside the iframe
@@ -43,13 +43,14 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
   // Wait longer to account for animations and slow environments.
   await spinnerLocator
     .waitFor({ state: 'visible', timeout: 15000 })
-    .catch(() => {});
+    .catch(() => undefined);
 
   // Save element visibility, computed styles and bounding box for debugging
   let box = await spinnerLocator.boundingBox();
   const computedStyle = await spinnerLocator
     .evaluate((el) => {
-      const s = getComputedStyle(el as Element);
+      const s = getComputedStyle(el as Element) as CSSStyleDeclaration &
+        Record<string, string | undefined>;
       return {
         width: s.width,
         height: s.height,
@@ -57,8 +58,7 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
         visibility: s.visibility,
         opacity: s.opacity,
         background: s.background,
-        animation:
-          (s as any).animation || (s as any)['-webkit-animation'] || '',
+        animation: s.animation || s['-webkit-animation'] || '',
       };
     })
     .catch(() => null);
@@ -70,7 +70,7 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
     );
     await spinnerLocator
       .waitFor({ state: 'visible', timeout: 5000 })
-      .catch(() => {});
+      .catch(() => undefined);
     box = await spinnerLocator.boundingBox();
   }
 

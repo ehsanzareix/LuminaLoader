@@ -337,6 +337,48 @@ export class LuminaLoader {
     return 'light';
   }
 
+  private addMediaQueryListener(
+    mq: MediaQueryList,
+    listener: (e: MediaQueryListEvent) => void,
+  ) {
+    if ('addEventListener' in mq) {
+      mq.addEventListener('change', listener as unknown as EventListener);
+    } else if ('addListener' in mq) {
+      const legacy = mq as MediaQueryList & {
+        addListener?: (l: (e: MediaQueryListEvent) => void) => void;
+      };
+      if (legacy.addListener) {
+        if (legacy.addListener) {
+          (legacy.addListener as (l: (e: MediaQueryListEvent) => void) => void)(
+            listener,
+          );
+        }
+      }
+    }
+  }
+
+  private removeMediaQueryListener(
+    mq: MediaQueryList,
+    listener: (e: MediaQueryListEvent) => void,
+  ) {
+    if ('removeEventListener' in mq) {
+      mq.removeEventListener('change', listener as unknown as EventListener);
+    } else if ('removeListener' in mq) {
+      const legacy = mq as MediaQueryList & {
+        removeListener?: (l: (e: MediaQueryListEvent) => void) => void;
+      };
+      if (legacy.removeListener) {
+        if (legacy.removeListener) {
+          (
+            legacy.removeListener as (
+              l: (e: MediaQueryListEvent) => void,
+            ) => void
+          )(listener);
+        }
+      }
+    }
+  }
+
   private watchTheme() {
     if (typeof window === 'undefined' || !('matchMedia' in window)) return;
     try {
@@ -347,16 +389,7 @@ export class LuminaLoader {
       };
       const mq = this.themeMediaQuery;
       if (mq) {
-        if ('addEventListener' in mq) {
-          mq.addEventListener(
-            'change',
-            this.themeListener as unknown as EventListener,
-          );
-        } else if ('addListener' in mq) {
-          (mq as any).addListener(
-            this.themeListener as unknown as EventListener,
-          );
-        }
+        this.addMediaQueryListener(mq, this.themeListener);
       }
     } catch (e) {
       this.themeMediaQuery = null;
@@ -369,7 +402,7 @@ export class LuminaLoader {
       typeof v === 'object' &&
       v !== null &&
       'appendChild' in v &&
-      typeof (v as any).appendChild === 'function'
+      typeof (v as { appendChild?: unknown }).appendChild === 'function'
     );
   }
 
@@ -400,16 +433,7 @@ export class LuminaLoader {
     this.prevActiveElement = null;
     if (this.themeMediaQuery && this.themeListener) {
       try {
-        if ('removeEventListener' in this.themeMediaQuery) {
-          this.themeMediaQuery.removeEventListener(
-            'change',
-            this.themeListener,
-          );
-        } else if ('removeListener' in this.themeMediaQuery) {
-          (this.themeMediaQuery as any).removeListener(
-            this.themeListener as unknown as EventListener,
-          );
-        }
+        this.removeMediaQueryListener(this.themeMediaQuery, this.themeListener);
       } catch (e) {
         // Ignore errors when removing listeners from older browsers
         void e;
