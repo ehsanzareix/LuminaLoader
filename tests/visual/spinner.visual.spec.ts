@@ -22,16 +22,58 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
 
   // If Storybook served the manager page, use the preview iframe.
   let spinnerLocator = page.locator(selector).first();
-  if ((await page.$('#storybook-preview-iframe')) !== null) {
+  const iframeEl = await page.$('#storybook-preview-iframe');
+  if (iframeEl !== null) {
+    // Wait for iframe preview to load its content
+    await page
+      .waitForSelector('#storybook-preview-iframe[data-is-loaded="true"]', {
+        timeout: 10000,
+      })
+      .catch(() => {});
     const frameLocator = page.frameLocator('#storybook-preview-iframe');
     spinnerLocator = frameLocator.locator(selector).first();
+    // Wait for the spinner to be attached inside the iframe
+    await spinnerLocator.waitFor({ state: 'attached', timeout: 15000 });
+  } else {
+    // No iframe — top-level preview
+    spinnerLocator = page.locator(selector).first();
+    await spinnerLocator.waitFor({ state: 'attached', timeout: 15000 });
   }
 
   // Wait longer to account for animations and slow environments.
-  await spinnerLocator.waitFor({ state: 'visible', timeout: 15000 });
+  await spinnerLocator
+    .waitFor({ state: 'visible', timeout: 15000 })
+    .catch(() => {});
 
-  // Save element visibility and bounding box for debugging
-  const box = await spinnerLocator.boundingBox();
+  // Save element visibility, computed styles and bounding box for debugging
+  let box = await spinnerLocator.boundingBox();
+  const computedStyle = await spinnerLocator
+    .evaluate((el) => {
+      const s = getComputedStyle(el as Element);
+      return {
+        width: s.width,
+        height: s.height,
+        display: s.display,
+        visibility: s.visibility,
+        opacity: s.opacity,
+        background: s.background,
+        animation:
+          (s as any).animation || (s as any)['-webkit-animation'] || '',
+      };
+    })
+    .catch(() => null);
+
+  // If element is present but offscreen, scroll it into view and retry
+  if (box && (box.y < 0 || box.x < 0 || box.height === 0)) {
+    await spinnerLocator.evaluate((el) =>
+      (el as HTMLElement).scrollIntoView({ block: 'center', inline: 'center' }),
+    );
+    await spinnerLocator
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
+    box = await spinnerLocator.boundingBox();
+  }
+
   const frames = page.frames().map((f) => ({ url: f.url(), name: f.name() }));
   fs.writeFileSync(
     'test-results/spinner-meta.json',
@@ -41,6 +83,7 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
         frames,
         visible: await spinnerLocator.isVisible(),
         box,
+        computedStyle,
       },
       null,
       2,
@@ -53,8 +96,9 @@ test('Spinner visual smoke - capture screenshot', async ({ page }) => {
     // attach a debug log
     fs.appendFileSync(
       'test-results/spinner.html',
-      '\n\n<!-- Spinner bounding box was null -->',
+      '\n\n<!-- Spinner bounding box was null or element not found -->',
     );
+    throw new Error('Spinner element not found or not visible');
   }
   expect(await spinnerLocator.isVisible()).toBe(true);
 });
