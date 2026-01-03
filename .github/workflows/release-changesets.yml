@@ -27,4 +27,31 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          node -e "const { execSync } = require('child_process'); const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json','utf8')); const workspaces = pkg.workspaces || []; for (const w of workspaces) { const base = w.replace('/*',''); const dirs = fs.readdirSync(base, {withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>`${base}/${d.name}`); for (const d of dirs) { const p = JSON.parse(fs.readFileSync(`${d}/package.json`,'utf8')); try { console.log('Publishing', p.name); execSync(`npm publish ${d} --access public`,{stdio:'inherit'}); } catch (e) { const m = e && e.message || ''; if (m.includes('You cannot publish over the previously published versions') || m.includes('403')) { console.log('Already published, skipping', p.name); continue; } throw e; } } }"
+          node <<'NODE'
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+
+          const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+          const workspaces = pkg.workspaces || [];
+
+          for (const w of workspaces) {
+            const base = w.replace('/*','');
+            if (!fs.existsSync(base)) continue;
+            const dirs = fs.readdirSync(base, {withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>path.join(base,d.name));
+            for (const d of dirs) {
+              const pjson = JSON.parse(fs.readFileSync(path.join(d,'package.json'),'utf8'));
+              try {
+                console.log('Publishing', pjson.name);
+                execSync(`npm publish ${d} --access public`, {stdio: 'inherit'});
+              } catch (e) {
+                const m = e && (e.stderr && e.stderr.toString()) || (e && e.message) || '';
+                if (m.includes('You cannot publish over the previously published versions') || m.includes('403')) {
+                  console.log('Already published, skipping', pjson.name);
+                  continue;
+                }
+                throw e;
+              }
+            }
+          }
+          NODE
