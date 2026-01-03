@@ -1,6 +1,6 @@
 {
   "name": "@lumina/core",
-  "version": "0.0.0-development",
+  "version": "0.0.0",
   "description": "Lumina core runtime (extracted)",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
