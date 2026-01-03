@@ -21,21 +21,37 @@ jobs:
         uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify NPM token
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          if ! npm whoami >/dev/null 2>&1; then
+            echo "NPM_TOKEN invalid or expired. Please rotate the token in repository secrets and retry."
+            npm whoami || true
+            exit 1
+          fi
       - name: Publish unpublished packages (custom)
         if: steps.changesets.outputs.hasChangesets == 'false'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           node <<'NODE'
           const { execSync } = require('child_process');
           const fs = require('fs');
           const path = require('path');
 
-          try {
+          function compareVersions(a,b){
+            const pa = (a||'0.0.0').split('.').map(s=>parseInt(s.replace(/[^0-9].*/,'')||'0',10)||0);
+            const pb = (b||'0.0.0').split('.').map(s=>parseInt(s.replace(/[^0-9].*/,'')||'0',10)||0);
+            for(let i=0;i<3;i++){ if(pa[i]>pb[i]) return 1; if(pa[i]<pb[i]) return -1; }
+            return 0;
+          }
+
+          try{
             execSync('git remote set-url origin https://github.com/ehsanzareix/LuminaLoader.git');
             console.log('Set origin to HTTPS');
-          } catch (e) {
+          }catch(e){
             console.warn('Could not set origin URL:', e.message);
           }
 
@@ -48,16 +64,35 @@ jobs:
             const dirs = fs.readdirSync(base, {withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>path.join(base,d.name));
             for (const d of dirs) {
               const pjson = JSON.parse(fs.readFileSync(path.join(d,'package.json'),'utf8'));
+              const localVersion = pjson.version || '0.0.0';
+              const name = pjson.name;
+              let registryVersion = null;
               try {
-                console.log('Publishing', pjson.name);
+                let out = execSync(`npm view ${name} version --json`, {stdio:['pipe','pipe','pipe']}).toString().trim();
+                out = out.replace(/^"|"$/g,'');
+                if (out) registryVersion = out;
+              } catch (e) {
+                registryVersion = null; // not found or other error
+              }
+
+              if (registryVersion) {
+                console.log(`Registry version for ${name} is ${registryVersion}, local is ${localVersion}`);
+                if (compareVersions(registryVersion, localVersion) >= 0) {
+                  console.log('Skipping publish for', name, '- registry has same or newer version');
+                  continue;
+                }
+              }
+
+              try {
+                console.log('Publishing', name);
                 execSync('npm publish --access public', { cwd: d, stdio: 'inherit' });
               } catch (e) {
                 const m = e && (e.stderr && e.stderr.toString()) || (e && e.message) || '';
                 if (m.includes('You cannot publish over the previously published versions') || m.includes('403')) {
-                  console.log('Already published, skipping', pjson.name);
+                  console.log('Already published, skipping', name);
                   continue;
                 }
-                console.warn('Publish failed for', pjson.name, e && e.message);
+                console.warn('Publish failed for', name, e && e.message);
                 throw e;
               }
             }
