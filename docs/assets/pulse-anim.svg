@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="140" height="140" role="img" aria-label="Pulse animated preview">
-  <style>
-    .r1 { animation: pulse 1.5s ease-out infinite; }
-    @keyframes pulse { 0% { r:12; opacity: .9 } 50% { r:26; opacity: .3 } 100% { r:12; opacity: .9 } }
-  </style>
-  <circle cx="50" cy="50" r="12" fill="#4fa94d" />
-  <circle class="r1" cx="50" cy="50" r="12" fill="none" stroke="#6ad3a1" stroke-width="3" opacity="0.9" />
-</svg>
