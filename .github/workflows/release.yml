@@ -1,12 +1,8 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
   workflow_dispatch: {}
+# NOTE: semantic-release is still available as a manual workflow but automatic releases are deprecated in favor of Changesets
 
 jobs:
   release:
