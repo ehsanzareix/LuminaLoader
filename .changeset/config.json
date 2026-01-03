@@ -1,7 +1,7 @@
 {
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "your-org/lumina-loader" }
+    { "repo": "ehsanzareix/LuminaLoader" }
   ],
   "commit": false,
   "access": "restricted",
