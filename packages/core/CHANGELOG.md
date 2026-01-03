@@ -1,5 +1,11 @@
 # @lumina/core
 
+## 0.0.1
+
+### Patch Changes
+
+- [#17](https://github.com/ehsanzareix/LuminaLoader/pull/17) [`b337ebf`](https://github.com/ehsanzareix/LuminaLoader/commit/b337ebf0ac7cf9710318ccfddcddc5be66895a88) Thanks [@ehsanzareix](https://github.com/ehsanzareix)! - Rename `@lumina/core` to the unscoped `lumina-loader` package and make the repo root private so publishing comes from `packages/core`.
+
 ## 0.0.0
 
 ### Patch Changes
