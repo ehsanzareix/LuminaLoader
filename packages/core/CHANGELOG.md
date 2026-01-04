@@ -1,5 +1,11 @@
 # @lumina/core
 
+## 1.1.2
+
+### Patch Changes
+
+- [#21](https://github.com/ehsanzareix/LuminaLoader/pull/21) [`d879135`](https://github.com/ehsanzareix/LuminaLoader/commit/d8791357ae8c9833aaa411028384fe054ac70b3d) Thanks [@ehsanzareix](https://github.com/ehsanzareix)! - Bump `lumina-loader` to publish the unscoped core package (align with existing public package versions).
+
 ## 0.0.2
 
 ### Patch Changes
