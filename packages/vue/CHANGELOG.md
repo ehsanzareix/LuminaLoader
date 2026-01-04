@@ -1,5 +1,11 @@
 # lumina-loader-vue
 
+## 0.0.2
+
+### Patch Changes
+
+- [#27](https://github.com/ehsanzareix/LuminaLoader/pull/27) [`a0dc09b`](https://github.com/ehsanzareix/LuminaLoader/commit/a0dc09b71c769de46b8be56a4fe847d3173f1ecb) Thanks [@ehsanzareix](https://github.com/ehsanzareix)! - Ensure adapter packages build during publish (prepare/prepack) and include `src/` SFCs as a fallback so published packages contain runtime entries (fixes missing `dist/` in published packages).
+
 ## 0.0.1
 
 ### Patch Changes
