@@ -1,5 +1,11 @@
 # @lumina/core
 
+## 0.0.2
+
+### Patch Changes
+
+- [#19](https://github.com/ehsanzareix/LuminaLoader/pull/19) [`694b498`](https://github.com/ehsanzareix/LuminaLoader/commit/694b49814831c06c908108afc233d3cf0cf43d3b) Thanks [@ehsanzareix](https://github.com/ehsanzareix)! - Bump `lumina-loader` version so it is newer than the package already published on npm (1.1.0), allowing the release job to publish the new version.
+
 ## 0.0.1
 
 ### Patch Changes
