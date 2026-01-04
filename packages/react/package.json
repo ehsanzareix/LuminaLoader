@@ -10,7 +10,9 @@
   ],
   "scripts": {
     "build": "tsup src/index.tsx --format cjs,esm --dts --out-dir dist",
-    "test": "vitest"
+    "test": "vitest",
+    "prepare": "npm run build",
+    "prepack": "npm run build"
   },
   "publishConfig": {
     "access": "public"
