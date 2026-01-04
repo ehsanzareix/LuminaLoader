@@ -98,3 +98,71 @@ jobs:
             }
           }
           NODE
+      - name: Build release notes (custom)
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        id: build_release
+        run: |
+          node <<'NODE'
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+          const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+          const workspaces = pkg.workspaces || [];
+          const published = [];
+
+          function compareVersions(a,b){
+            const pa = (a||'0.0.0').split('.').map(s=>parseInt(s.replace(/[^0-9].*/,'')||'0',10)||0);
+            const pb = (b||'0.0.0').split('.').map(s=>parseInt(s.replace(/[^0-9].*/,'')||'0',10)||0);
+            for(let i=0;i<3;i++){ if(pa[i]>pb[i]) return 1; if(pa[i]<pb[i]) return -1; }
+            return 0;
+          }
+
+          for (const w of workspaces) {
+            const base = w.replace('/*','');
+            if (!fs.existsSync(base)) continue;
+            const dirs = fs.readdirSync(base, {withFileTypes:true}).filter(d=>d.isDirectory()).map(d=>path.join(base,d.name));
+            for (const d of dirs) {
+              const pjson = JSON.parse(fs.readFileSync(path.join(d,'package.json'),'utf8'));
+              const name = pjson.name;
+              try {
+                let out = execSync(`npm view ${name} version --json`, {stdio:['pipe','pipe','pipe']}).toString().trim();
+                out = out.replace(/^"|"$/g,'');
+                if (out) {
+                  published.push({name,version: out});
+                }
+              } catch (e) {
+                // not published
+              }
+            }
+          }
+
+          if (published.length === 0) {
+            console.log('No packages published, skipping GitHub release creation');
+            console.log('::set-output name=tag::');
+            console.log('::set-output name=notes::');
+            process.exit(0);
+          }
+
+          // pick highest version
+          let highest = '0.0.0';
+          for (const p of published) {
+            if (compareVersions(p.version, highest) > 0) highest = p.version;
+          }
+          const tag = 'v' + highest;
+          let notes = `Published packages:\n\n`;
+          for (const p of published) notes += `- ${p.name}@${p.version}\n`;
+          notes += `\nAutomated release created by workflow.`;
+          console.log(`::set-output name=tag::${tag}`);
+          console.log(`::set-output name=notes::${notes}`);
+          NODE
+      - name: Create GitHub release
+        if: steps.changesets.outputs.hasChangesets == 'false' && steps.build_release.outputs.tag != ''
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.build_release.outputs.tag }}
+          release_name: ${{ steps.build_release.outputs.tag }}
+          body: ${{ steps.build_release.outputs.notes }}
+          draft: false
+          prerelease: false
