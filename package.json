@@ -3,12 +3,21 @@
   "private": true,
   "version": "1.1.0",
   "description": "Lightweight, framework-agnostic loader with custom logo support",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": "./dist/index.css"
+  },
   "files": [
     "dist"
   ],
+  "sideEffects": ["**/*.css"],
   "workspaces": [
     "packages/*"
   ],
