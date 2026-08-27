@@ -25,6 +25,7 @@ Use the `image` type to show a custom image or logo as a loader. Pass an `image`
 
 ```ts
 import { createLoader } from 'lumina-loader';
+import 'lumina-loader/styles.css';
 const loader = createLoader({
   target: '#app',
   type: 'image',
@@ -126,7 +127,8 @@ A thin React wrapper is available that reuses the core engine. It mounts the loa
 
 ````tsx
 import React from 'react';
-import { LuminaLoaderReact } from 'lumina-loader/src/adapters/react/LuminaLoader';
+import { LuminaLoaderReact } from 'lumina-loader-react';
+import 'lumina-loader-react/styles.css';
 
 export default function App() {
   return (
@@ -149,7 +151,8 @@ A thin Vue 3 wrapper is also available and reuses the core engine. Example:
 </template>
 
 <script setup lang="ts">
-import LuminaLoader from 'lumina-loader/src/adapters/vue/LuminaLoader.vue';
+import { LuminaLoaderVue as LuminaLoader } from 'lumina-loader-vue';
+import 'lumina-loader-vue/styles.css';
 </script>
 ````
 

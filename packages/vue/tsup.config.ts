@@ -6,5 +6,5 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   clean: true,
   sourcemap: true,
-  external: ['**/*.vue'],
+  external: [/\.vue$/],
 });

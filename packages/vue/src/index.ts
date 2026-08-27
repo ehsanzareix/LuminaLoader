@@ -1,2 +1,3 @@
-export { default as LuminaLoaderVue } from '../../../src/adapters/vue/LuminaLoader.vue';
-export * from '../../../src/adapters/vue/LuminaLoader.vue';
+import '../../../src/styles/lumina.css';
+
+export { default as LuminaLoaderVue } from './LuminaLoader.vue';

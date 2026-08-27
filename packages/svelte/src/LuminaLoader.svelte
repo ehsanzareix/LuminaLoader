@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import type { LoaderOptions } from '../../core/LuminaLoader';
-  import { createLoader } from '../../api';
+  import type { LoaderOptions } from 'lumina-loader';
+  import { createLoader } from 'lumina-loader';
 
   export let show: boolean = true;
   export let container: HTMLElement | string | null = null;

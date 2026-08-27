@@ -5,5 +5,8 @@ export default defineConfig({
   dts: false,
   format: ['esm', 'cjs'],
   clean: true,
-  sourcemap: true,
+  // Svelte's emitted component CSS already carries source-map metadata. Asking
+  // esbuild to concatenate another CSS map leaves a malformed comment between
+  // the global and component styles in the published file.
+  sourcemap: false,
 });

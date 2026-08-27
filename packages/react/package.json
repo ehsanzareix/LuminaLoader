@@ -2,12 +2,21 @@
   "name": "lumina-loader-react",
   "version": "0.0.2",
   "description": "React adapter for Lumina Loader",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": "./dist/index.css"
+  },
   "files": [
     "dist"
   ],
+  "sideEffects": ["**/*.css"],
   "scripts": {
     "build": "tsup src/index.tsx --format cjs,esm --dts --out-dir dist",
     "test": "vitest",
@@ -16,6 +25,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "repository": {
     "type": "git",

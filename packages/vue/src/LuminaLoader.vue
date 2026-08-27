@@ -3,13 +3,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, watch, toRef, ref, computed } from 'vue';
-import { createLoader } from '../../api';
-import type { LoaderOptions } from '../../core/LuminaLoader';
+import { onMounted, onBeforeUnmount, watch, ref } from 'vue';
+import { createLoader } from 'lumina-loader';
+import type { LoaderOptions } from 'lumina-loader';
 
-interface Props extends Omit<LoaderOptions, 'target'> {
+interface Props {
   show?: boolean;
   container?: HTMLElement | string;
+  type?: 'spinner' | 'dots' | 'bars' | 'pulse' | 'gradient-ring' | 'orbit' | 'wave' | 'image' | 'progress';
+  size?: number;
+  color?: string;
+  speed?: number;
+  overlay?: boolean | 'fullscreen' | 'inline';
+  overlayZIndex?: number;
+  backdrop?: { opacity?: number; blur?: string; color?: string; clickToClose?: boolean };
+  ariaLabel?: string;
+  image?: string | SVGElement;
+  imageAnimation?: 'rotate' | 'pulse' | 'scale' | 'bounce';
+  theme?: 'auto' | 'light' | 'dark';
+  progress?: number;
+  progressVariant?: 'linear' | 'circular';
+  text?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,8 +37,6 @@ const emit = defineEmits<{
 
 let loader: ReturnType<typeof createLoader> | null = null;
 const host = ref<HTMLElement | null>(null);
-const showHost = computed(() => !props.overlay);
-
 function mountLoader() {
   if (loader) return;
 
