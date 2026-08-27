@@ -1,6 +1,6 @@
 {
   "name": "lumina-loader-react",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "React adapter for Lumina Loader",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -16,7 +16,9 @@
   "files": [
     "dist"
   ],
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "build": "tsup src/index.tsx --format cjs,esm --dts --out-dir dist",
     "test": "vitest",

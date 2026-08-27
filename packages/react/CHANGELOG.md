@@ -1,5 +1,12 @@
 # lumina-loader-react
 
+## 0.0.3
+
+### Patch Changes
+
+- [#32](https://github.com/ehsanzareix/LuminaLoader/pull/32) [`0f59e14`](https://github.com/ehsanzareix/LuminaLoader/commit/0f59e14ca0e0fb810a93989cc453ca16e7ea9388) Thanks [@ehsanzareix](https://github.com/ehsanzareix)! - Fix published entry points, include build output and exported styles, declare
+  framework peer dependencies, and make Vue and Svelte packages self-contained.
+
 ## 0.0.2
 
 ### Patch Changes
